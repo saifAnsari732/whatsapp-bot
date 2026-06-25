@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { X, Save, Bot } from 'lucide-react';
 
-const API_URL = 'http://localhost:3000/api';
+const API_URL = 'https://whatsapp-bot-xioi.onrender.com/api';
 
 const SettingsModal = ({ isOpen, onClose }) => {
   const [prompt, setPrompt] = useState('');

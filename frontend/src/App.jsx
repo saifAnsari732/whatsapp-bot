@@ -6,8 +6,8 @@ import ChatWindow from './components/ChatWindow';
 import BroadcastModal from './components/BroadcastModal';
 import SettingsModal from './components/SettingsModal';
 
-const API_URL = 'http://localhost:3000/api';
-const SOCKET_URL = 'http://localhost:3000';
+const API_URL = 'https://whatsapp-bot-xioi.onrender.com/api';
+const SOCKET_URL = 'https://whatsapp-bot-xioi.onrender.com';
 
 function App() {
   const [contacts, setContacts] = useState([]);
