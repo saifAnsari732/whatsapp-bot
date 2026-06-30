@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { X, Save, Bot } from 'lucide-react';
-
-const API_URL = 'https://whatsapp-bot-xioi.onrender.com/api';
+import { getSettings, updateSettings } from '../services/api';
 
 const SettingsModal = ({ isOpen, onClose }) => {
   const [prompt, setPrompt] = useState('');
@@ -17,7 +15,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
 
   const fetchSettings = async () => {
     try {
-      const res = await axios.get(`${API_URL}/settings`);
+      const res = await getSettings();
       if (res.data && res.data.systemPrompt) {
         setPrompt(res.data.systemPrompt);
       }
@@ -31,7 +29,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
     setLoading(true);
     setStatus('Saving...');
     try {
-      await axios.post(`${API_URL}/settings`, { systemPrompt: prompt });
+      await updateSettings(prompt);
       setStatus('Settings saved successfully!');
       setTimeout(() => {
         setStatus('');

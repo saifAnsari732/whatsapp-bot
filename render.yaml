@@ -1,0 +1,23 @@
+services:
+  # ─── Backend (Node.js API + Webhook) ────────────────────────
+  - type: web
+    name: whatsapp-bot
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 3001
+      - key: NODE_ENV
+        value: production
+      - key: META_ACCESS_TOKEN
+        sync: false        # Render Dashboard mein manually daalein
+      - key: WHATSAPP_PHONE_NUMBER_ID
+        sync: false
+      - key: WEBHOOK_VERIFY_TOKEN
+        sync: false
+      - key: MONGODB_URI
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false

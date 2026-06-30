@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { io } from 'socket.io-client';
 import Sidebar from '../components/Sidebar';
 import ChatWindow from '../components/ChatWindow';
 import BroadcastModal from '../components/BroadcastModal';
 import SettingsModal from '../components/SettingsModal';
+import { getContacts, getMessages, sendMessage as sendMsg, BASE_URL } from '../services/api';
 
-const API_URL = 'https://whatsapp-bot-xioi.onrender.com/api';
-const SOCKET_URL = 'https://whatsapp-bot-xioi.onrender.com';
+const SOCKET_URL = BASE_URL;
 
 function Dashboard() {
   const [contacts, setContacts] = useState([]);
@@ -23,7 +22,7 @@ function Dashboard() {
     setSocket(newSocket);
 
     // Fetch initial contacts
-    axios.get(`${API_URL}/contacts`).then(res => setContacts(res.data));
+    getContacts().then(res => setContacts(res.data));
 
     return () => newSocket.close();
   }, []);
@@ -53,7 +52,7 @@ function Dashboard() {
   // Load messages when a contact is selected
   useEffect(() => {
     if (selectedContact) {
-      axios.get(`${API_URL}/contacts/${selectedContact._id}/messages`)
+      getMessages(selectedContact._id)
         .then(res => setMessages(res.data));
     }
   }, [selectedContact]);
@@ -61,10 +60,7 @@ function Dashboard() {
   const handleSendMessage = async (text) => {
     if (!selectedContact) return;
     try {
-      await axios.post(`${API_URL}/messages/send`, {
-        contactId: selectedContact._id,
-        text
-      });
+      await sendMsg(selectedContact._id, text);
     } catch (error) {
       console.error('Failed to send message', error);
     }

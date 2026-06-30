@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { X, Send } from 'lucide-react';
-
-const API_URL = 'https://whatsapp-bot-xioi.onrender.com/api';
+import { broadcastMessage } from '../services/api';
 
 const BroadcastModal = ({ isOpen, onClose }) => {
   const [message, setMessage] = useState('');
@@ -18,9 +16,7 @@ const BroadcastModal = ({ isOpen, onClose }) => {
     setStatus('Sending broadcast to all contacts...');
     
     try {
-      const response = await axios.post(`${API_URL}/messages/broadcast`, {
-        text: message.trim()
-      });
+      const response = await broadcastMessage(null, message.trim());
       setStatus(`Success! Message sent to ${response.data.sentCount} out of ${response.data.totalContacts} contacts.`);
       setTimeout(() => {
         onClose();
