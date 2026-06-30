@@ -44,14 +44,18 @@ const handleIncomingMessage = async (req, res) => {
         console.log(`Received message from ${from}: ${msgBody} (Type: ${messageType})`);
 
         if (msgBody) {
+          console.log(`[STEP 1] Message received from ${from}: "${msgBody}"`);
+
           // Find or create contact
           let contact = await Contact.findOne({ phoneNumber: from });
           if (!contact) {
             contact = await Contact.create({ phoneNumber: from, name: profileName });
+            console.log(`[STEP 2] New contact created: ${profileName}`);
           } else {
             contact.lastMessageAt = new Date();
             if (profileName !== 'Unknown') contact.name = profileName;
             await contact.save();
+            console.log(`[STEP 2] Existing contact updated: ${profileName}`);
           }
 
           // Save incoming message
@@ -61,33 +65,35 @@ const handleIncomingMessage = async (req, res) => {
             content: msgBody,
             status: 'received'
           });
+          console.log(`[STEP 3] Incoming message saved to DB`);
 
           // Emit to frontend
-          if (io) {
-            io.emit('new_message', { contact, message: incomingMsg });
-          }
+          if (io) io.emit('new_message', { contact, message: incomingMsg });
 
-          // Pass the message to the agent service to generate a response
+          // Generate AI reply
+          console.log(`[STEP 4] Calling Gemini AI...`);
           const replyPayload = await agentService.generateReply(msgBody, from);
-          
-          // Send the reply via WhatsApp Service
+          console.log(`[STEP 5] Gemini reply generated: ${JSON.stringify(replyPayload)}`);
+
+          // Send the reply via WhatsApp
           if (replyPayload) {
-             await whatsappService.sendMessage(phoneNumberId, from, replyPayload);
-             
-             let savedContent = replyPayload.type === 'image' ? '[Image: ' + replyPayload.content.image.caption + ']' : replyPayload.content.text.body;
+            console.log(`[STEP 6] Sending reply via WhatsApp API... PhoneID: ${phoneNumberId}, To: ${from}`);
+            await whatsappService.sendMessage(phoneNumberId, from, replyPayload);
+            console.log(`[STEP 7] Reply sent successfully!`);
 
-             // Save outgoing message
-             const outgoingMsg = await Message.create({
-               contactId: contact._id,
-               type: 'outgoing',
-               content: savedContent,
-               status: 'sent'
-             });
+            let savedContent = replyPayload.type === 'image'
+              ? '[Image: ' + replyPayload.content.image.caption + ']'
+              : replyPayload.content.text.body;
 
-             // Emit to frontend
-             if (io) {
-               io.emit('new_message', { contact, message: outgoingMsg });
-             }
+            const outgoingMsg = await Message.create({
+              contactId: contact._id,
+              type: 'outgoing',
+              content: savedContent,
+              status: 'sent'
+            });
+
+            if (io) io.emit('new_message', { contact, message: outgoingMsg });
+            console.log(`[DONE] Full flow completed successfully!`);
           }
         }
       }
