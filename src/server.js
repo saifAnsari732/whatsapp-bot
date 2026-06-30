@@ -3,6 +3,7 @@ const http = require('http');
 const mongoose = require('mongoose');
 const { Server } = require('socket.io');
 const app = require('./app');
+const keepAlive = require('./services/keepAlive.service');
 
 const PORT = process.env.PORT || 3000;
 
@@ -31,6 +32,7 @@ mongoose.connect(process.env.MONGODB_URI)
     server.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
       console.log(`Webhook endpoint is ready at /webhook`);
+      keepAlive(); // Server ko Render par jagte rakhta hai
     });
   })
   .catch((err) => {
