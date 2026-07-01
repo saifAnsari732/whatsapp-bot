@@ -54,6 +54,15 @@ const generateReply = async (incomingMessage, senderId) => {
     };
   }
 
+  if (lowerMessage === 'contact human 📞' || lowerMessage === 'contact human') {
+    return {
+      type: 'text',
+      content: {
+        text: { body: "Aap hamari team se directly yahan baat kar sakte hain:\n\n📞 *Call / WhatsApp:* 9905234866\n🌐 *Website:* https://www.kisandigital.org/\n\nAap apna business name aur requirement likh kar chhod sakte hain, hamari team aapko jald hi contact karegi. 🙏" }
+      }
+    };
+  }
+
   if (lowerMessage === 'menu') {
     return {
       type: 'image',
