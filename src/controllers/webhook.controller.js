@@ -41,6 +41,11 @@ const handleIncomingMessage = async (req, res) => {
         let from = body.entry[0].changes[0].value.messages[0].from; // sender phone number
         let msgBody = body.entry[0].changes[0].value.messages[0].text?.body; // text message content
         let messageType = body.entry[0].changes[0].value.messages[0].type;
+        
+        if (messageType === 'interactive') {
+          const interactiveObj = body.entry[0].changes[0].value.messages[0].interactive;
+          msgBody = interactiveObj?.button_reply?.title || interactiveObj?.list_reply?.title;
+        }
         let profileName = body.entry[0].changes[0].value.contacts?.[0]?.profile?.name || 'Unknown';
 
         console.log(`Received message from ${from}: ${msgBody} (Type: ${messageType})`);

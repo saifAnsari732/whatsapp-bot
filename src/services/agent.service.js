@@ -10,6 +10,28 @@ const generateReply = async (incomingMessage, senderId) => {
   const lowerMessage = incomingMessage.toLowerCase().trim();
 
   // 1. Static Rule-Based Logic (Highest Priority)
+  const greetings = ['hi', 'hello', 'hey', 'namaste', 'start'];
+  if (greetings.includes(lowerMessage)) {
+    return {
+      type: 'interactive',
+      content: {
+        interactive: {
+          type: "button",
+          body: {
+            text: "Namaste! 👋 Main Kisan Digital ka AI Assistant hoon. Aapko kis service mein help chahiye?"
+          },
+          action: {
+            buttons: [
+              { type: "reply", reply: { id: "btn_services", title: "Our Services 🌐" } },
+              { type: "reply", reply: { id: "btn_pricing", title: "Pricing 💰" } },
+              { type: "reply", reply: { id: "btn_contact", title: "Contact 📞" } }
+            ]
+          }
+        }
+      }
+    };
+  }
+
   if (lowerMessage === 'menu') {
     return {
       type: 'image',
