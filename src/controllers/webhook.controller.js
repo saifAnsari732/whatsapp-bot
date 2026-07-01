@@ -27,9 +27,11 @@ const handleIncomingMessage = async (req, res) => {
     let body = req.body;
     const io = req.app.get('io');
     console.log("====> WEBHOOK HIT! <====");
-    console.log(JSON.stringify(body, null, 2));
 
     if (body.object) {
+      // ✅ IMMEDIATELY SEND 200 OK TO META TO PREVENT RETRIES!
+      res.status(200).send('EVENT_RECEIVED');
+
       if (
         body.entry &&
         body.entry[0].changes &&
@@ -104,13 +106,11 @@ const handleIncomingMessage = async (req, res) => {
           }
         }
       }
-      res.sendStatus(200);
     } else {
       res.sendStatus(404);
     }
   } catch (error) {
     console.error('Error handling incoming message:', error);
-    res.sendStatus(500);
   }
 };
 
