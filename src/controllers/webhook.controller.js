@@ -26,6 +26,8 @@ const handleIncomingMessage = async (req, res) => {
   try {
     let body = req.body;
     const io = req.app.get('io');
+    console.log("====> WEBHOOK HIT! <====");
+    console.log(JSON.stringify(body, null, 2));
 
     if (body.object) {
       if (
