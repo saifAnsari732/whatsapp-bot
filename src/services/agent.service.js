@@ -16,15 +16,37 @@ const generateReply = async (incomingMessage, senderId) => {
       type: 'interactive',
       content: {
         interactive: {
-          type: "button",
+          type: "list",
+          header: {
+            type: "text",
+            text: "Kisan Digital"
+          },
           body: {
             text: "Namaste! 👋 Main Kisan Digital ka AI Assistant hoon. Aapko kis service mein help chahiye?"
           },
+          footer: {
+            text: "Please select an option below"
+          },
           action: {
-            buttons: [
-              { type: "reply", reply: { id: "btn_services", title: "Our Services 🌐" } },
-              { type: "reply", reply: { id: "btn_pricing", title: "Pricing 💰" } },
-              { type: "reply", reply: { id: "btn_contact", title: "Contact 📞" } }
+            button: "View Options 📋",
+            sections: [
+              {
+                title: "Main Services",
+                rows: [
+                  { id: "row_web", title: "Web Development 💻" },
+                  { id: "row_ads", title: "Google & Meta Ads 📈" },
+                  { id: "row_seo", title: "SEO & Ranking 🔍" },
+                  { id: "row_app", title: "App Development 📱" },
+                  { id: "row_social", title: "Social Media 📱" }
+                ]
+              },
+              {
+                title: "More Info",
+                rows: [
+                  { id: "row_pricing", title: "Pricing Packages 💰" },
+                  { id: "row_contact", title: "Contact Human 📞" }
+                ]
+              }
             ]
           }
         }
