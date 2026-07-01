@@ -10,7 +10,7 @@ const generateReply = async (incomingMessage, senderId) => {
   const lowerMessage = incomingMessage.toLowerCase().trim();
 
   // 1. Static Rule-Based Logic (Highest Priority)
-  const greetings = ['hi', 'hello', 'hey', 'namaste', 'start'];
+  const greetings = ['hi', 'hii', 'hiii', 'hello', 'hey', 'heyy', 'namaste', 'start'];
   if (greetings.includes(lowerMessage)) {
     return {
       type: 'interactive',
