@@ -12,7 +12,7 @@ const Home = () => {
         </div>
         
         <h1 className="hero-title">
-          Welcome to your <span className="neon-text">Smart Tech Assistant</span>
+          Welcome to <span className="neon-text">Kisan Digital AI</span>
         </h1>
         
         <p className="hero-subtitle">

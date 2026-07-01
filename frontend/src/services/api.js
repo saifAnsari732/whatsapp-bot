@@ -24,6 +24,10 @@ export const getMessages = (contactId) =>
 export const sendMessage = (contactId, text) =>
   api.post('/messages/send', { contactId, text });
 
+// Naye number par direct message bhejo
+export const sendDirectMessage = (phoneNumber, text) =>
+  api.post('/messages/direct', { phoneNumber, text });
+
 // Broadcast message bhejo multiple contacts ko
 export const broadcastMessage = (contactIds, text) =>
   api.post('/messages/broadcast', { text });

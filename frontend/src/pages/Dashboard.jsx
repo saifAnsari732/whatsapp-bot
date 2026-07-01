@@ -4,6 +4,7 @@ import Sidebar from '../components/Sidebar';
 import ChatWindow from '../components/ChatWindow';
 import BroadcastModal from '../components/BroadcastModal';
 import SettingsModal from '../components/SettingsModal';
+import DirectMessageModal from '../components/DirectMessageModal';
 import { getContacts, getMessages, sendMessage as sendMsg, BASE_URL } from '../services/api';
 
 const SOCKET_URL = BASE_URL;
@@ -15,6 +16,7 @@ function Dashboard() {
   const [socket, setSocket] = useState(null);
   const [isBroadcastOpen, setIsBroadcastOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isDirectMessageOpen, setIsDirectMessageOpen] = useState(false);
 
   useEffect(() => {
     // Connect Socket.io
@@ -74,6 +76,7 @@ function Dashboard() {
         onSelectContact={setSelectedContact} 
         onOpenBroadcast={() => setIsBroadcastOpen(true)}
         onOpenSettings={() => setIsSettingsOpen(true)}
+        onOpenDirectMessage={() => setIsDirectMessageOpen(true)}
       />
       <ChatWindow 
         contact={selectedContact} 
@@ -87,6 +90,18 @@ function Dashboard() {
       <SettingsModal 
         isOpen={isSettingsOpen} 
         onClose={() => setIsSettingsOpen(false)} 
+      />
+      <DirectMessageModal 
+        isOpen={isDirectMessageOpen} 
+        onClose={() => setIsDirectMessageOpen(false)} 
+        onContactCreated={(newContact) => {
+          setContacts(prev => {
+            const exists = prev.find(c => c._id === newContact._id);
+            if (!exists) return [newContact, ...prev];
+            return prev;
+          });
+          setSelectedContact(newContact);
+        }}
       />
     </div>
   );

@@ -9,7 +9,7 @@ const Navbar = ({ onOpenSettings }) => {
     <nav className="global-navbar glass-effect">
       <div className="nav-brand">
         <Bot size={28} className="neon-text" />
-        <h1>TechSolutions AI</h1>
+        <h1>Kisan Digital AI</h1>
       </div>
       
       <div className="nav-links">

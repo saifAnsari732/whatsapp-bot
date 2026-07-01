@@ -1,7 +1,7 @@
 import React from 'react';
 import { MessageCircle, Megaphone, Settings as SettingsIcon } from 'lucide-react';
 
-const Sidebar = ({ contacts, selectedContact, onSelectContact, onOpenBroadcast, onOpenSettings }) => {
+const Sidebar = ({ contacts, selectedContact, onSelectContact, onOpenBroadcast, onOpenSettings, onOpenDirectMessage }) => {
   return (
     <div className="sidebar glass-effect">
       <div className="sidebar-header" style={{ justifyContent: 'space-between' }}>
@@ -13,6 +13,10 @@ const Sidebar = ({ contacts, selectedContact, onSelectContact, onOpenBroadcast, 
           <button className="icon-btn tooltip-container" onClick={onOpenSettings} aria-label="AI Settings">
             <SettingsIcon size={20} color="#f8fafc" />
             <span className="tooltip-text">AI Brain Settings</span>
+          </button>
+          <button className="icon-btn tooltip-container" onClick={onOpenDirectMessage} aria-label="Direct Message">
+            <MessageCircle size={20} color="#10b981" />
+            <span className="tooltip-text">New Direct Message</span>
           </button>
           <button className="icon-btn tooltip-container" onClick={onOpenBroadcast} aria-label="Broadcast Message">
             <Megaphone size={20} color="#f8fafc" />

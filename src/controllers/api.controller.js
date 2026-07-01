@@ -111,9 +111,59 @@ const broadcastMessage = async (req, res) => {
   }
 };
 
+// Send a direct message to a new or existing number
+const sendDirectMessage = async (req, res) => {
+  try {
+    const { phoneNumber, text } = req.body;
+    const io = req.app.get('io');
+    
+    if (!phoneNumber || !text) {
+      return res.status(400).json({ error: 'Phone number and text are required' });
+    }
+
+    // Format phone number (remove +, spaces, etc if needed, though usually they send pure digits)
+    const cleanPhone = phoneNumber.replace(/\D/g, '');
+
+    // Find or create contact
+    let contact = await Contact.findOne({ phoneNumber: cleanPhone });
+    if (!contact) {
+      contact = await Contact.create({ phoneNumber: cleanPhone, name: 'New Contact' });
+    }
+
+    const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
+
+    // Send via Meta API
+    const payload = {
+      type: 'text',
+      content: { text: { body: text } }
+    };
+    
+    await whatsappService.sendMessage(phoneNumberId, cleanPhone, payload);
+
+    // Save to DB
+    const outgoingMsg = await Message.create({
+      contactId: contact._id,
+      type: 'outgoing',
+      content: text,
+      status: 'sent'
+    });
+
+    // Emit to frontend
+    if (io) {
+      io.emit('new_message', { contact, message: outgoingMsg });
+    }
+
+    res.json({ success: true, contact, message: outgoingMsg });
+  } catch (error) {
+    console.error('Error sending direct message:', error);
+    res.status(500).json({ error: 'Failed to send message. Ensure number is correct and within 24h window or uses template.' });
+  }
+};
+
 module.exports = {
   getContacts,
   getMessages,
   sendMessage,
-  broadcastMessage
+  broadcastMessage,
+  sendDirectMessage
 };

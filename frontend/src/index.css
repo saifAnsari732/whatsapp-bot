@@ -317,16 +317,20 @@ body {
   line-height: 1.5;
 }
 
-.message-incoming {
-  background: var(--msg-incoming);
+.incoming {
+  background: var(--bg-panel-hover);
+  border: 1px solid rgba(255,255,255,0.05);
   align-self: flex-start;
   border-bottom-left-radius: 4px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
-.message-outgoing {
-  background: var(--msg-outgoing);
+.outgoing {
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+  color: white;
   align-self: flex-end;
   border-bottom-right-radius: 4px;
+  box-shadow: 0 4px 15px var(--accent-glow);
 }
 
 .chat-input-area {

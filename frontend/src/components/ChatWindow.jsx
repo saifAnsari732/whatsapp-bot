@@ -42,10 +42,10 @@ const ChatWindow = ({ contact, messages, onSendMessage }) => {
       <div className="messages-area">
         {messages.map((msg) => (
           <div key={msg._id} className={`message-bubble ${msg.type}`}>
-            {msg.content}
-            <span className="message-time">
+            <div className="message-content" style={{ marginBottom: '4px' }}>{msg.content}</div>
+            <div className="message-time" style={{ fontSize: '11px', opacity: 0.7, textAlign: 'right' }}>
               {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-            </span>
+            </div>
           </div>
         ))}
         <div ref={messagesEndRef} />
