@@ -29,8 +29,17 @@ export const sendDirectMessage = (phoneNumber, text) =>
   api.post('/messages/direct', { phoneNumber, text });
 
 // Broadcast message bhejo multiple contacts ko
-export const broadcastMessage = (contactIds, text) =>
-  api.post('/messages/broadcast', { text });
+export const broadcastMessage = (text) => {
+  return api.post('/messages/broadcast', { text });
+};
+
+export const broadcastTemplate = (templateName, languageCode, imageUrl) => {
+  return api.post('/messages/broadcast-template', { 
+    templateName, 
+    languageCode, 
+    imageUrl 
+  });
+};
 
 // ─── Settings (Bot ka System Prompt) ─────────────────────────
 // Bot ki current settings fetch karo

@@ -111,6 +111,70 @@ const broadcastMessage = async (req, res) => {
   }
 };
 
+// Send a broadcast template message to all contacts
+const broadcastTemplate = async (req, res) => {
+  try {
+    const { templateName, languageCode, imageUrl } = req.body;
+    const io = req.app.get('io');
+    const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
+
+    const contacts = await Contact.find();
+    if (!contacts.length) {
+      return res.status(404).json({ error: 'No contacts found' });
+    }
+
+    const payload = {
+      type: 'template',
+      content: {
+        template: {
+          name: templateName,
+          language: { code: languageCode || 'en' },
+          components: imageUrl ? [
+            {
+              type: "header",
+              parameters: [
+                {
+                  type: "image",
+                  image: {
+                    link: imageUrl
+                  }
+                }
+              ]
+            }
+          ] : []
+        }
+      }
+    };
+
+    let sentCount = 0;
+
+    for (const contact of contacts) {
+      try {
+        await whatsappService.sendMessage(phoneNumberId, contact.phoneNumber, payload);
+        
+        const outgoingMsg = await Message.create({
+          contactId: contact._id,
+          type: 'outgoing',
+          content: `[TEMPLATE BROADCAST] ${templateName}`,
+          status: 'sent'
+        });
+
+        if (io) {
+          io.emit('new_message', { contact, message: outgoingMsg });
+        }
+        sentCount++;
+      } catch (err) {
+        console.error(`Failed to broadcast template to ${contact.phoneNumber}:`, err.message);
+      }
+    }
+
+    res.json({ success: true, sentCount, totalContacts: contacts.length });
+  } catch (error) {
+    console.error('Error broadcasting template:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
 // Send a direct message to a new or existing number
 const sendDirectMessage = async (req, res) => {
   try {
@@ -165,5 +229,6 @@ module.exports = {
   getMessages,
   sendMessage,
   broadcastMessage,
+  broadcastTemplate,
   sendDirectMessage
 };

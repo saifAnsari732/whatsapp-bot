@@ -94,9 +94,9 @@ const generateReply = async (incomingMessage, senderId) => {
 
     return {
       type: 'text',
-      content: {
+      content:{
         text: { body: responseText }
-      }
+       }
     };
   } catch (error) {
     console.error('Gemini API Error:', error);
