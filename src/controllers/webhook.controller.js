@@ -32,16 +32,22 @@ const handleIncomingMessage = async (req, res) => {
       // ✅ IMMEDIATELY SEND 200 OK TO META TO PREVENT RETRIES!
       res.status(200).send('EVENT_RECEIVED');
 
-      if (
-        body.entry &&
-        body.entry[0].changes &&
-        body.entry[0].changes[0] &&
-        body.entry[0].changes[0].value.messages &&
-        body.entry[0].changes[0].value.messages[0]
-      ) {
-        let phoneNumberId = body.entry[0].changes[0].value.metadata.phone_number_id;
-        let from = body.entry[0].changes[0].value.messages[0].from; // sender phone number
-        let msgBody = body.entry[0].changes[0].value.messages[0].text?.body; // text message content
+      const value = body.entry?.[0]?.changes?.[0]?.value;
+      if (!value) return;
+
+      // Log delivery statuses (like sent, delivered, read, or FAILED)
+      if (value.statuses && value.statuses.length > 0) {
+        const statusObj = value.statuses[0];
+        console.log(`[STATUS UPDATE] Phone: ${statusObj.recipient_id}, Status: ${statusObj.status}`);
+        if (statusObj.errors) {
+          console.error(`[DELIVERY ERROR] Details:`, JSON.stringify(statusObj.errors, null, 2));
+        }
+      }
+
+      if (value.messages && value.messages[0]) {
+        let phoneNumberId = value.metadata.phone_number_id;
+        let from = value.messages[0].from; // sender phone number
+        let msgBody = value.messages[0].text?.body; // text message content
         let messageType = body.entry[0].changes[0].value.messages[0].type;
         
         if (messageType === 'interactive') {

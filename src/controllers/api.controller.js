@@ -65,16 +65,28 @@ const sendMessage = async (req, res) => {
   }
 };
 
-// Send a broadcast message to all contacts
 const broadcastMessage = async (req, res) => {
   try {
-    const { text } = req.body;
+    const { text, manualNumbers } = req.body;
     const io = req.app.get('io');
     const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
 
-    const contacts = await Contact.find();
-    if (!contacts.length) {
-      return res.status(404).json({ error: 'No contacts found' });
+    let targetContacts = [];
+    if (manualNumbers && manualNumbers.trim()) {
+      const numbersArray = manualNumbers.split(',').map(n => n.trim().replace(/\D/g, '')).filter(n => n);
+      for (const num of numbersArray) {
+        let contact = await Contact.findOne({ phoneNumber: num });
+        if (!contact) {
+          contact = await Contact.create({ phoneNumber: num, name: 'Imported Contact' });
+        }
+        targetContacts.push(contact);
+      }
+    } else {
+      targetContacts = await Contact.find();
+    }
+
+    if (!targetContacts.length) {
+      return res.status(404).json({ error: 'No valid contacts found to send message' });
     }
 
     const payload = {
@@ -84,7 +96,7 @@ const broadcastMessage = async (req, res) => {
 
     let sentCount = 0;
 
-    for (const contact of contacts) {
+    for (const contact of targetContacts) {
       try {
         await whatsappService.sendMessage(phoneNumberId, contact.phoneNumber, payload);
         
@@ -104,23 +116,35 @@ const broadcastMessage = async (req, res) => {
       }
     }
 
-    res.json({ success: true, sentCount, totalContacts: contacts.length });
+    res.json({ success: true, sentCount, totalContacts: targetContacts.length });
   } catch (error) {
     console.error('Error broadcasting message:', error);
     res.status(500).json({ error: 'Server error' });
   }
 };
 
-// Send a broadcast template message to all contacts
 const broadcastTemplate = async (req, res) => {
   try {
-    const { templateName, languageCode, imageUrl } = req.body;
+    const { templateName, languageCode, imageUrl, manualNumbers } = req.body;
     const io = req.app.get('io');
     const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
 
-    const contacts = await Contact.find();
-    if (!contacts.length) {
-      return res.status(404).json({ error: 'No contacts found' });
+    let targetContacts = [];
+    if (manualNumbers && manualNumbers.trim()) {
+      const numbersArray = manualNumbers.split(',').map(n => n.trim().replace(/\D/g, '')).filter(n => n);
+      for (const num of numbersArray) {
+        let contact = await Contact.findOne({ phoneNumber: num });
+        if (!contact) {
+          contact = await Contact.create({ phoneNumber: num, name: 'Imported Contact' });
+        }
+        targetContacts.push(contact);
+      }
+    } else {
+      targetContacts = await Contact.find();
+    }
+
+    if (!targetContacts.length) {
+      return res.status(404).json({ error: 'No valid contacts found to send template' });
     }
 
     const payload = {
@@ -148,7 +172,7 @@ const broadcastTemplate = async (req, res) => {
 
     let sentCount = 0;
 
-    for (const contact of contacts) {
+    for (const contact of targetContacts) {
       try {
         await whatsappService.sendMessage(phoneNumberId, contact.phoneNumber, payload);
         
@@ -168,7 +192,7 @@ const broadcastTemplate = async (req, res) => {
       }
     }
 
-    res.json({ success: true, sentCount, totalContacts: contacts.length });
+    res.json({ success: true, sentCount, totalContacts: targetContacts.length });
   } catch (error) {
     console.error('Error broadcasting template:', error);
     res.status(500).json({ error: 'Server error' });

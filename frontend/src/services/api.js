@@ -29,15 +29,16 @@ export const sendDirectMessage = (phoneNumber, text) =>
   api.post('/messages/direct', { phoneNumber, text });
 
 // Broadcast message bhejo multiple contacts ko
-export const broadcastMessage = (text) => {
-  return api.post('/messages/broadcast', { text });
+export const broadcastMessage = (text, manualNumbers) => {
+  return api.post('/messages/broadcast', { text, manualNumbers });
 };
 
-export const broadcastTemplate = (templateName, languageCode, imageUrl) => {
+export const broadcastTemplate = (templateName, languageCode, imageUrl, manualNumbers) => {
   return api.post('/messages/broadcast-template', { 
     templateName, 
     languageCode, 
-    imageUrl 
+    imageUrl,
+    manualNumbers
   });
 };
 
